@@ -1,11 +1,19 @@
-import { getAuthenticatedClient } from '@/lib/supabase';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { Database } from '@/lib/types';
 
 export async function PUT(request: NextRequest) {
   try {
-    const { id, data, accessToken } = await request.json();
-    const supabase = await getAuthenticatedClient(accessToken);
+    const supabase = createRouteHandlerClient<Database>({ cookies });
+    const { id, data } = await request.json();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) throw new Error('Unauthorized');
 
     const { error } = await supabase.from('hours').update(data).eq('id', id);
 
@@ -22,8 +30,14 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { id, accessToken } = await request.json();
-    const supabase = await getAuthenticatedClient(accessToken);
+    const supabase = createRouteHandlerClient<Database>({ cookies });
+    const { id } = await request.json();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) throw new Error('Unauthorized');
 
     const { error } = await supabase.from('hours').delete().eq('id', id);
 

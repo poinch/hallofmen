@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { isUserAdmin } from '@/actions/users';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
@@ -31,9 +30,6 @@ export default function AdminLogin() {
 
       if (authError) throw new Error('Credenziali non valide');
       if (!data.user) throw new Error('Nessun utente trovato');
-
-      const isAdmin = await isUserAdmin(data.user.id);
-      if (!isAdmin) throw new Error('Non sei autorizzato come admin');
 
       router.push('/admin');
       router.refresh();

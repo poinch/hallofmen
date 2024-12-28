@@ -12,20 +12,18 @@ async function apiRequest<T>({
   method,
   data,
   id,
-  accessToken,
 }: {
   endpoint: string;
   method: 'POST' | 'PUT' | 'DELETE';
   data?: any;
   id?: string;
-  accessToken: string;
 }): Promise<T> {
   const response = await fetch(`/api/${endpoint}`, {
     method,
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ data, id, accessToken }),
+    body: JSON.stringify({ data, id }),
   });
 
   if (!response.ok) {
@@ -37,51 +35,68 @@ async function apiRequest<T>({
 }
 
 // Services CRUD
-export const createService = (
-  data: Omit<Service, 'id' | 'created_at' | 'updated_at'>,
-  accessToken: string
-) => apiRequest<Service>({ endpoint: 'services', method: 'POST', data, accessToken });
+export const createService = (data: Omit<Service, 'id' | 'created_at' | 'updated_at'>) =>
+  apiRequest<Service>({ endpoint: 'services', method: 'POST', data });
 
-export const updateService = (id: string, data: Partial<Service>, accessToken: string) =>
-  apiRequest<Service>({ endpoint: 'services', method: 'PUT', id, data, accessToken });
+export const updateService = (id: string, data: Partial<Service>) =>
+  apiRequest<Service>({ endpoint: 'services', method: 'PUT', id, data });
 
-export const deleteService = (id: string, accessToken: string) =>
-  apiRequest({ endpoint: 'services', method: 'DELETE', id, accessToken });
+export const deleteService = (id: string) =>
+  apiRequest({ endpoint: 'services', method: 'DELETE', id });
 
 // Team Members CRUD
-export const createTeamMember = (
-  data: Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>,
-  accessToken: string
-) => apiRequest<TeamMember>({ endpoint: 'team', method: 'POST', data, accessToken });
+export const createTeamMember = (data: Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>) =>
+  apiRequest<TeamMember>({ endpoint: 'team', method: 'POST', data });
 
-export const updateTeamMember = (id: string, data: Partial<TeamMember>, accessToken: string) =>
-  apiRequest<TeamMember>({ endpoint: 'team', method: 'PUT', id, data, accessToken });
+export const updateTeamMember = (id: string, data: Partial<TeamMember>) =>
+  apiRequest<TeamMember>({ endpoint: 'team', method: 'PUT', id, data });
 
-export const deleteTeamMember = (id: string, accessToken: string) =>
-  apiRequest({ endpoint: 'team', method: 'DELETE', id, accessToken });
+export const deleteTeamMember = (id: string) =>
+  apiRequest({ endpoint: 'team', method: 'DELETE', id });
 
 // Gallery CRUD
-export const createGalleryItem = (
-  data: Omit<GalleryItem, 'id' | 'created_at' | 'updated_at'>,
-  accessToken: string
-) => apiRequest<GalleryItem>({ endpoint: 'gallery', method: 'POST', data, accessToken });
+export const createGalleryItem = (data: Omit<GalleryItem, 'id' | 'created_at' | 'updated_at'>) =>
+  apiRequest<GalleryItem>({ endpoint: 'gallery', method: 'POST', data });
 
-export const updateGalleryItem = (id: string, data: Partial<GalleryItem>, accessToken: string) =>
-  apiRequest<GalleryItem>({ endpoint: 'gallery', method: 'PUT', id, data, accessToken });
+export const updateGalleryItem = (id: string, data: Partial<GalleryItem>) =>
+  apiRequest<GalleryItem>({ endpoint: 'gallery', method: 'PUT', id, data });
 
-export const deleteGalleryItem = (id: string, accessToken: string) =>
-  apiRequest({ endpoint: 'gallery', method: 'DELETE', id, accessToken });
+export const deleteGalleryItem = (id: string) =>
+  apiRequest({ endpoint: 'gallery', method: 'DELETE', id });
 
 // Contact CRUD
-export const updateContact = (id: string, data: Partial<Contact>, accessToken: string) =>
-  apiRequest<Contact>({ endpoint: 'contacts', method: 'PUT', id, data, accessToken });
+export async function updateContact(id: string, data: Partial<Contact>) {
+  const response = await fetch('/api/contacts', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, data }),
+  });
 
-export const deleteContact = (id: string, accessToken: string) =>
-  apiRequest({ endpoint: 'contacts', method: 'DELETE', id, accessToken });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message);
+  }
+
+  return response.json();
+}
+
+export async function deleteContact(id: string) {
+  const response = await fetch('/api/contacts', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message);
+  }
+
+  return response.json();
+}
 
 // Hours CRUD
-export const updateHours = (id: string, data: Partial<Hours>, accessToken: string) =>
-  apiRequest<Hours>({ endpoint: 'hours', method: 'PUT', id, data, accessToken });
+export const updateHours = (id: string, data: Partial<Hours>) =>
+  apiRequest<Hours>({ endpoint: 'hours', method: 'PUT', id, data });
 
-export const deleteHours = (id: string, accessToken: string) =>
-  apiRequest({ endpoint: 'hours', method: 'DELETE', id, accessToken });
+export const deleteHours = (id: string) => apiRequest({ endpoint: 'hours', method: 'DELETE', id });

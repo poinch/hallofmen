@@ -46,32 +46,32 @@ export default function AdminContacts() {
 
     try {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error('No authenticated session found');
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Unauthorized');
 
       if (editingContact) {
-        await updateContact(editingContact.id, contactData, session.access_token);
+        await updateContact(editingContact.id, contactData);
         loadContacts();
         setIsDialogOpen(false);
         setEditingContact(null);
       }
     } catch (error) {
-      console.error('Errore nel salvataggio:', error);
+      console.error('Error saving:', error);
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error('No authenticated session found');
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Unauthorized');
 
-      await deleteContact(id, session.access_token);
+      await deleteContact(id);
       loadContacts();
     } catch (error) {
-      console.error('Errore eliminazione:', error);
+      console.error('Error deleting:', error);
     }
   };
 

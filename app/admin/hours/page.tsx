@@ -9,7 +9,6 @@ import { Textarea } from '@/components/ui/textarea';
 import Loading from '@/components/loading';
 import { getHours } from '@/actions/contacts';
 import { updateHours, deleteHours } from '@/actions/admin';
-import { supabase } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 
 type Hours = Database['public']['Tables']['hours']['Row'];
@@ -45,12 +44,7 @@ export default function AdminHours() {
     };
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error('No authenticated session found');
-
-      await updateHours(editingHours.id, hoursData, session.access_token);
+      await updateHours(editingHours.id, hoursData);
       loadHours();
       setIsDialogOpen(false);
       setEditingHours(null);
@@ -61,12 +55,7 @@ export default function AdminHours() {
 
   const handleDelete = async (id: string) => {
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error('No authenticated session found');
-
-      await deleteHours(id, session.access_token);
+      await deleteHours(id);
       loadHours();
     } catch (error) {
       console.error('Errore eliminazione:', error);

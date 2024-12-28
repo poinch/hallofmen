@@ -14,11 +14,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import Loading from '@/components/loading';
 import { getTeamMembers } from '@/actions/team';
 import { createTeamMember, updateTeamMember, deleteTeamMember } from '@/actions/admin';
 import type { Database } from '@/lib/types';
-import { supabase } from '@/lib/supabase';
-import Loading from '@/components/loading';
 
 type TeamMember = Database['public']['Tables']['team_members']['Row'];
 
@@ -54,15 +53,10 @@ export default function AdminTeam() {
     };
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error('No authenticated session found');
-
       if (editingMember) {
-        await updateTeamMember(editingMember.id, memberData, session.access_token);
+        await updateTeamMember(editingMember.id, memberData);
       } else {
-        await createTeamMember(memberData, session.access_token);
+        await createTeamMember(memberData);
       }
       loadTeam();
       setIsDialogOpen(false);
@@ -74,12 +68,7 @@ export default function AdminTeam() {
 
   const handleDelete = async (id: string) => {
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error('No authenticated session found');
-
-      await deleteTeamMember(id, session.access_token);
+      await deleteTeamMember(id);
       loadTeam();
     } catch (error) {
       console.error('Errore eliminazione:', error);

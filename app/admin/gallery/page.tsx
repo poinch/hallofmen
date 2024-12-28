@@ -54,14 +54,14 @@ export default function AdminGallery() {
 
     try {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error('No authenticated session found');
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Unauthorized');
 
       if (editingItem) {
-        await updateGalleryItem(editingItem.id, itemData, session.access_token);
+        await updateGalleryItem(editingItem.id, itemData);
       } else {
-        await createGalleryItem(itemData, session.access_token);
+        await createGalleryItem(itemData);
       }
       loadGallery();
       setIsDialogOpen(false);
@@ -74,11 +74,11 @@ export default function AdminGallery() {
   const handleDelete = async (id: string) => {
     try {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error('No authenticated session found');
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Unauthorized');
 
-      await deleteGalleryItem(id, session.access_token);
+      await deleteGalleryItem(id);
       loadGallery();
     } catch (error) {
       console.error('Errore eliminazione:', error);

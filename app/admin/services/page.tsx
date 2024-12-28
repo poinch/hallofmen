@@ -15,7 +15,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { getServices } from '@/actions/services';
 import { createService, updateService, deleteService } from '@/actions/admin';
-import { supabase } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 import Loading from '@/components/loading';
 
@@ -53,15 +52,10 @@ export default function AdminServices() {
     };
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error('No authenticated session found');
-
       if (editingService) {
-        await updateService(editingService.id, serviceData, session.access_token);
+        await updateService(editingService.id, serviceData);
       } else {
-        await createService(serviceData, session.access_token);
+        await createService(serviceData);
       }
       loadServices();
       setIsDialogOpen(false);
@@ -74,12 +68,7 @@ export default function AdminServices() {
   const handleDelete = async (id: string) => {
     if (confirm('Sei sicuro di voler cancellare questo servizio?')) {
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (!session) throw new Error('No authenticated session found');
-
-        await deleteService(id, session.access_token);
+        await deleteService(id);
         loadServices();
       } catch (error) {
         console.error('Errore cancellazione:', error);
